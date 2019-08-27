@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>Arcade Games using R and TensorFlow &middot; Ellis Hughes</title>
+		<link rel="canonical" href="/thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/">
+		<link rel="stylesheet" type="text/css" href="/css/main.css" />
+		
+	</head>
+	<body>
+		<a id="title" href="/" title="Ellis Hughes">
+			
+				<img id="logo" alt="Logo" src="/images/logo_sm.jpg" />
+			
+			
+				<h1>Ellis Hughes</h1>
+			
+		</a>
+		
+			<h4>blogs and musings of a bioengineer turned data scientist</h4>
+		
+		<div id="social">
+			
+			
+			
+			<a href="https://github.com/thebioengineer" title="Github">
+				<img alt="GitHub" height="64px" width="64px" src="/images/github.svg" />
+			</a>
+			
+			
+			
+			<a href="https://twitter.com/ellis_hughes" title="Twitter">
+				<img alt="Twitter" height="64px" width="64px" src="/images/twitter.svg" />
+			</a>
+			
+			
+			<a href="https://linkedin.com/in/ellishughes" title="LinkedIn">
+				<img alt="LinkedIn" height="64px" width="64px" src="/images/linkedin.svg" />
+			</a>
+			
+                        
+		</div>
+		<div class="links">
+			<a href="/">Home</a>
+			
+				<a href="/post/">Archive</a>
+			
+			
+		</div>
+
+	<div class="postBody">
+		<div class="post">
+			<h1>Arcade Games using R and TensorFlow</h1>
+			<span class="post-meta">Tue, Jul 9, 2019 - Read in 11 Min</span>
+			<div class="content">
+			
+			
+<script src="/thebioengineer.github.io/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/thebioengineer.github.io/rmarkdown-libs/dagre/dagre.min.js"></script>
+<script src="/thebioengineer.github.io/rmarkdown-libs/lodash/lodash.js"></script>
+<script src="/thebioengineer.github.io/rmarkdown-libs/nomnoml/nomnoml.js"></script>
+<script src="/thebioengineer.github.io/rmarkdown-libs/nomnoml-binding/nomnoml.js"></script>
+<script src="/thebioengineer.github.io/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<p>Reinforcement learning is an interesting technique where in the user gives a model a game state and requests that it produce some sort of reaction to the state. This action is then fed back into the model to generate the next state. If the result of this action is a positive reaction, it is recorded and the model is fit to imply this action is a good one. If the result is negative, the inverse.</p>
+<p>Eventually, after playing many games, the algorithm starts to make connections between states and the “correct” action to take.</p>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="nomnoml html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"code":"\n  #fill: #FEFEFF\n  #lineWidth: 1\n  #zoom: 4\n  #direction: right\n   \n[Model]->[Action]\n[Action]->[Game/Simulation]\n[Game/Simulation]->[reward]\n[Game/Simulation]->[state]\n[reward]->[Model]\n[state]->[Model]\n","svg":false},"evals":[],"jsHooks":[]}</script>
+<p>State. React. Reward.</p>
+<p>By repeating these steps thousands of times, the deep learning algorithm “learns” the rules of the game to great effect. There are currently lots of blogs and articles devoted to this type of machine learning available in python, but none in R. I decided it was time to both learn how to do this and record it for my fellow R programmers.</p>
+<p>The intention of this piece is to give an introduction to reinforcement learning. At the end I was successful in training a simple densely connected model to play the classic game “Snake” using a smaller set of parameters traditionally used in reinforcement learning. Below are two gif’s. The gif on the left is the very first game it played, and the gif on the right is my final dense model’s best performance.</p>
+<div style="text-align:center">
+<p><img src="/post/2019-07-09-arcade-games-using-r-and-tensor-flow_files/init_animation_early.gif" style="width:40%"/> <img src="/post/2019-07-09-arcade-games-using-r-and-tensor-flow_files/init_animation_longer_725.gif" style="width:40%"/></p>
+</div>
+<div id="getting-started" class="section level2">
+<h2>Getting Started</h2>
+<p>My experience with deep learning is based on reading the <a href="https://www.manning.com/books/deep-learning-with-r">Deep Learning in R</a> book by François Chollet with J. J. Allaire. Thankfully, I found several very helpful posts online that I used to help develop my programs. Keon Kim’s blog contained a very useful introduction to reinforcement learning in <a href="https://keon.io/deep-q-learning/">‘Deep Q-Learning with Keras and Gym’</a>, and Mauro Como’s article <a href="https://towardsdatascience.com/how-to-teach-an-ai-to-play-games-deep-reinforcement-learning-28f9b920440a">‘How to teach AI to play Games: Deep Reinforcement Learning’</a> helped me develop my framework. Finally, I reviewed the paper from <a href="https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf">the DeepMind team</a>, which really helped my understanding of the algorithm and design decisions made.</p>
+</div>
+<div id="deep-q-network" class="section level2">
+<h2>Deep Q Network</h2>
+<p>At the heart of the training is the Deep Q Network (DQN) algorithm. The idea is that we have a function (Q) that given a state, give an action to maximize the reward. Putting this in terms of the snake game, if the head of the snake is just to the left of the food, the move that is most likely to give it a reward would be to move to the right.</p>
+<p>The Q function is a concept that is actually fairly straight forward. Given a state, it will have probabilities of selecting a specific action that will give it some reward. Whichever the highest probability is, the Q function will select that action. So, given the table below, where there are 3 actions and N states,</p>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+State
+</th>
+<th style="text-align:left;">
+Action 1
+</th>
+<th style="text-align:left;">
+Action 2
+</th>
+<th style="text-align:left;">
+Action 3
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+.5
+</td>
+<td style="text-align:left;">
+.01
+</td>
+<td style="text-align:left;">
+.063
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+.25
+</td>
+<td style="text-align:left;">
+.68
+</td>
+<td style="text-align:left;">
+.005
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+.001
+</td>
+<td style="text-align:left;">
+.034
+</td>
+<td style="text-align:left;">
+.9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+…
+</td>
+<td style="text-align:left;">
+…
+</td>
+<td style="text-align:left;">
+…
+</td>
+<td style="text-align:left;">
+…
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N
+</td>
+<td style="text-align:left;">
+.0125
+</td>
+<td style="text-align:left;">
+.645
+</td>
+<td style="text-align:left;">
+.631
+</td>
+</tr>
+</tbody>
+</table>
+<p>If the state is state 2, the 3 actions have a probability of .001,.034 and .9 of returning a reward. So the q function will select <code>Action 3</code>.</p>
+<p>Now as we never actually know the “true” Q function, it is updated over time given the new information gathered about the environment and the states. The “deep” part of the DQN agent is that Q function is a deep learning algorithm as opposed to an a table of types.</p>
+<p>I created a refclass called “DQN_agent”, that served as the framework for serving my models. It was surprisingly simple to set up, as there are not a lot of states for it to handle. I also created an object made to hold all the information needed to train each step and the methods, called “memory”.</p>
+<div id="memory-refclass" class="section level3">
+<h3>Memory Refclass</h3>
+<p>Refclasses can be a bit funny, but essentially it has field for containing data, and methods. They behave more similarly to other languages objects in that they are edited in-place. This memory refclass has field for each of the bits of information needed to train the model: current state, next state, action, reward and whether the game game is done or not. It also has a field for the number of states it holds to make things simpler.</p>
+<p>It also has methods for adding more data and sampling the outputs. Unless you are working with the DQN agent, it is unlikely you will work directly with this class.</p>
+<p><details> <summary>Toggle For Code</summary></p>
+<pre class="r"><code>
+memory&lt;-setRefClass(&quot;memory&quot;,
+            fields=list(
+              state=&quot;list&quot;,
+              next_state=&quot;list&quot;,
+              reward=&quot;list&quot;,
+              action=&quot;list&quot;,
+              done=&quot;list&quot;,
+              nstates=&quot;numeric&quot;),
+            methods=list(
+              initialize=function(){
+                nstates&lt;&lt;-0
+              },
+              add=function(s1,r,a,d,s2){
+                state&lt;&lt;-c(state,list(s1))
+                reward&lt;&lt;-c(reward,list(r))
+                action&lt;&lt;-c(action,list(a))
+                done&lt;&lt;-c(done,list(d))
+                next_state&lt;&lt;-c(next_state,list(s2))
+                nstates&lt;&lt;-nstates+1
+              },
+              sample=function(x){
+                if(x==&quot;latest&quot;){
+                  minibatch&lt;-nstates
+                }else if(x==&quot;all&quot;){
+                  minibatch&lt;-seq(nstates)
+                }else{
+                  minibatch&lt;-base::sample(seq(nstates),x,replace = FALSE)
+                }
+                lapply(minibatch,function(idx){
+                  list(
+                    state = state[[idx]],
+                    action = action[[idx]],
+                    reward = reward[[idx]],
+                    done = done[[idx]],
+                    next_state = next_state[[idx]]
+                    )
+                })
+              }
+            ))
+</code></pre>
+<p></details></p>
+</div>
+<div id="dqn_agent-refclass" class="section level3">
+<h3>DQN_agent Refclass</h3>
+<p>Similarly to the memory refclass, the DQN_agent has fields for the model, and information/settings required for training the model. You might notice that one of the fields is actually holding a memory refclass object.</p>
+<p>There are a few more methods for this class than for memory, but it boils down to this:</p>
+<ol style="list-style-type: decimal">
+<li>initialize is a method to write the various decisions on training. Gamma is the degree to which the Q function will be updated, epsilon and epsilon decay are for how much randomness is introduced while training the model. The larger the epsilon decay, the longer there will be randomness. epsilon is any value between 1 and 0.</li>
+<li>add_model is a utility for saving the model you define into the DQN_agent.</li>
+<li>remember adds the state to the memory field.</li>
+<li>train_long is the method to train the model on potentially all the available data (or a subset) within the memory object.</li>
+<li>train_on is the method to train the model on a specific state/next_state pairing.</li>
+<li>next_step is the method for producing an action to take based on the trained model.</li>
+</ol>
+<p><details> <summary>Toggle For Code</summary></p>
+<pre class="r"><code>
+DQN&lt;-setRefClass(&quot;DQN_agent&quot;,
+                 fields=list(
+                   model=&quot;list&quot;,
+                   mem=&quot;memory&quot;,
+                   gamma=&quot;numeric&quot;,
+                   epsilon=&quot;numeric&quot;,
+                   e_decay=&quot;numeric&quot;
+                 ),
+                 methods=list(
+                   initialize=function(gamma=.9,epsilon_decay=400){
+                     gamma&lt;&lt;-gamma
+                     epsilon&lt;&lt;-1
+                     e_decay&lt;&lt;-epsilon_decay
+                     mem&lt;&lt;-new(&quot;memory&quot;)
+                   },
+                   add_Model=function(model){
+                     model&lt;&lt;-list(model)
+                   },
+                   
+                   remember=function(s1,r,a,d,s2){
+                     mem$add(s1,r,a,d,s2)
+                   },
+
+                   train_long=function(len=1000){
+                     if( mem$nstates &gt; len){
+                       minibatch = mem$sample(len)
+                     }else{
+                       minibatch = mem$sample(&quot;all&quot;)
+                     }
+
+                     for(x in minibatch){
+                       target = x$reward
+                       if(!x$done){
+                         target = x$reward + 
+                           gamma * max(next_step(x$next_state))
+                       }
+                       target_f = next_step(x$state)
+                       target_f[which.max(x$action)] = target
+
+                       tempModel&lt;-model[[1]]
+
+                       fit(tempModel,
+                           x$state,
+                           array(target_f,dim=dim(x$action)),
+                           epochs=1,
+                           verbose=0)
+
+                       model&lt;&lt;-list(tempModel)
+                     }
+                   },
+
+                   train_on=function(s1,r,a,d,s2){
+                     target = r
+                     if(!d){
+                       target = r + gamma * max(next_step(s2))
+                     }
+                     target_f = next_step(s1)
+                     target_f[which.max(a)] = target
+                     tempModel&lt;-model[[1]]
+                     fit(tempModel,
+                         s1,
+                         array(target_f,dim=dim(a)),
+                         epochs=1,
+                         verbose=0)
+                     model&lt;&lt;-list(tempModel)
+                   },
+
+                   next_step=function(state,randguess=TRUE){
+                     if(runif(1)&lt;epsilon &amp;&amp; randguess){
+                       predictions&lt;-runif(dim(model[[1]]$output)[[2]])
+                     }else{
+                       predictions&lt;-predict(model[[1]],state)
+                     }
+                     epsilon&lt;&lt;-max(.1,(epsilon)-(epsilon/e_decay))
+                     return(predictions)
+                   }
+
+                 ))
+</code></pre>
+<p></details></p>
+<div id="dqn-training" class="section level5">
+<h5>DQN Training</h5>
+<p>I will take a moment to discuss the training in the train_long and train_on methods in the DQN_agent, as they both perform similar tasks (training), but are implemented at different times. The key step is that train_on is implemented within the game at each iteration. This trains the model after each “step” in the game so it can learn within the game as it plays, but it will only be trained on a single iteration at a time. The train_long method trains the model on a randomly selected N subset of the total states that exist in memory. This is implemented at the end of the game to train the model on data it has already seen to hopefully speed up the learning process.</p>
+<p>The actual training of the model is performed a single “state” at a time, and goes as follows:</p>
+<pre><code>1. Acquire state, feed into model to get a prediction
+2. Set the &quot;reward&quot; to be the recorded reward from the game
+3. If the game is not over, update the &quot;reward&quot; on the following:
+  3.1 Predict the next action based on the next state (get probabilities for each &quot;action&quot;&quot;)
+  3.2 Multiply the most likely probability by gamma
+  3.3 Add the result to the &quot;reward&quot;
+4. Based on the current state, predict the next action (get probabilities for each &quot;action&quot;)
+5. Get the actual action was was performed, and replace the prediction probability of the current state next action with the reward value
+6. Train the model on an epoch of 1, and batchsize of 1, based on the current state as the inputs and the updated prediction probabilities as the outputs</code></pre>
+<p>The idea is that you are getting what the model predicts should be the next best step and reinforcing if it was a good step positively or negatively.</p>
+</div>
+</div>
+<div id="snake-simulator" class="section level3">
+<h3>Snake Simulator</h3>
+<p>Next step is to actually write the program to perform the simulation. You might already have a simulator set up, where you are able to feed in an action and it can give you back a perfect result. In my case I decided to write my own snake code. This is based off the <a href="https://github.com/bsspirit/gridgame">gridgame</a> package by Conan Zhang, but with my changes to make it available for training using a DQN.</p>
+<p>Thankfully snake is a rather simple game to program, and the rules are not too complicated. I was able to write out the code in a few hours. The biggest changes from the classic game is that now it will ask for an input for an action after each time it moved rather than moving a specific direction until it was ordered to do differently. This was mainly for simplicity on my part as R is not naturally multi-threaded and thus can only perform a single computation at a time. The code is available in a gist <a href="https://gist.github.com/thebioengineer/01816be5b590b9d44e77abbb87eaf179">here</a></p>
+<p>Upon inspection of the snake code, you will find that I also chose to limit the information I let the snake game reveal after each step. In most reinforcement learning scenarios, the status of all the pixels in the entire screen is returned to the model. In this implementation I shared the direction of the food (is it up, down, left or right of the head), which direction is “danger” that would cause the game to end, and what is the current direction that the snake is headed. I found this was easier to train the model, since I was feeding it the direct information it would need.</p>
+</div>
+<div id="keras-and-deep-learning" class="section level3">
+<h3>Keras and Deep Learning</h3>
+<p>The simplest model we could use, especially based on the type of state output would be a densely connected network. Each state was an array of 1 x 12, so the input_shape of the model is 12. There are 4 potential actions (up,down,left,right), so the last layer is a softmax output with 4 nodes.</p>
+<p>After some trial and error, I determined that limiting the number of nodes at each layer to 256 and having 6 hidden layers resulted in a model that learned the fastest. I found the optimizer_rmsprop resulted in the fastest learning model, though I know there are people that prefer optimizer_adam.</p>
+<pre class="r"><code>
+library(keras)
+
+snake_model &lt;- keras_model_sequential()
+
+snake_model %&gt;%
+  layer_dense(units = 256, activation = &#39;relu&#39;,input_shape = c(12)) %&gt;%
+  layer_dropout(0.1) %&gt;%
+  layer_dense(256, activation=&#39;relu&#39;) %&gt;%
+  layer_dropout(0.1) %&gt;%
+  layer_dense(256,activation = &quot;relu&quot;)%&gt;%
+  layer_dropout(0.1) %&gt;%
+  layer_dense(256,activation = &quot;relu&quot;)%&gt;%
+  layer_dropout(0.1) %&gt;%
+  layer_dense(256,activation = &quot;relu&quot;)%&gt;%
+  layer_dropout(0.1) %&gt;%
+  layer_dense(256,activation = &quot;relu&quot;)%&gt;%
+  layer_dense(4,activation = &quot;softmax&quot;)
+
+optimizer &lt;- optimizer_rmsprop(lr = 0.0005)
+
+snake_model %&gt;% compile(
+  loss = &quot;mse&quot;,
+  optimizer = optimizer
+)
+</code></pre>
+</div>
+<div id="putting-it-all-together" class="section level3">
+<h3>Putting It All Together</h3>
+<p>Now that I have everything defined in my refclasses, we can now start the process of training the model. It is actually surprisingly simple now that we have set everything up. We simply initialize all the refclasses as objects, and loop over games. I use a while counter to limit the number of games played to 200.</p>
+<p>Within the while loop, another loop goes until the game ends - when snake_game$dead is <code>TRUE</code>. The inner loop is where each state is run though the model to get an action, that action results in a step forward in the game. The states, action, and reward of the game is recorded and the Deep Q function is trained on this new information.</p>
+<p>Once the game ends, a cat statement logs the game and score, and the Deep Q function is retrained on a subset of the data to speed up the process. Scores, states and actions are recorded for replay and examination for later.</p>
+<pre class="r"><code>
+snake_game&lt;-new(&quot;snake&quot;)
+dqn_agent&lt;-new(&quot;DQN_agent&quot;)
+
+dqn_agent$add_Model(snake_model)
+
+counter_games&lt;-1
+record &lt;- 0
+best_game &lt;- 0
+records &lt;- list()
+fruitPos&lt;- list()
+while(counter_games &lt; 200){
+  # Initialize classes
+  snake_game$init()
+  food1 = snake_game$food
+
+  fruitRecord&lt;-list(food1)
+  # Perform first move
+  state&lt;-snake_game$run_iter(returnStatus = TRUE)
+  dqn_agent$remember(state$state,
+                     state$reward,
+                     state$action,
+                     state$done,
+                     state$state_new)
+  dqn_agent$train_on(state$state,
+                     state$reward,
+                     state$action,
+                     state$done, 
+                     state$state_new)
+
+  while(!snake_game$dead){
+    #get old state
+    state_old = state$state_new
+
+    #perform random actions based on agent.epsilon, or choose the action
+    prediction = dqn_agent$next_step(state_old)
+    final_move = c(&quot;up&quot;,&quot;down&quot;,&quot;left&quot;,&quot;right&quot;)[which.max(prediction)]
+
+    #perform new move and get new state
+    state&lt;-snake_game$run_iter(final_move,returnStatus = TRUE)
+    if(food1!=snake_game$food){
+      food1&lt;-snake_game$food
+      fruitRecord&lt;-c(fruitRecord,list(food1))
+    }
+
+    #train short memory base on the new action and state
+    dqn_agent$train_on(state$state,
+                       state$reward,
+                       state$action,
+                       state$done,
+                       state$state_new)
+    # store the new data into a long term memory
+    dqn_agent$remember(state$state,
+                       state$reward,
+                       state$action,
+                       state$done,
+                       state$state_new)
+
+    score = snake_game$score_total
+  }
+
+  #retrain on all data available
+  dqn_agent$train_long(3000)
+
+  cat(&quot;Game&quot;, counter_games, &quot;\tScore:&quot;, score,&quot;\n&quot;)
+
+  records&lt;-c(records,
+             list(list(game=counter_games,
+                       score=score,
+                       log=snake_game$log,
+                       fruit_positions=fruitRecord)))
+  counter_games &lt;- counter_games + 1
+}</code></pre>
+</div>
+</div>
+<div id="reviewing-and-saving" class="section level2">
+<h2>Reviewing and saving</h2>
+<p>Now that the model has been trained, the model is saved and the best model is converted into a gif to review. This is how the gif at the beginning of the post was made!</p>
+<pre class="r"><code>
+save_model_hdf5(dqn_agent$model[[1]],&quot;snake_player.hd5&quot;)
+
+bestScore&lt;-max(sapply(records,`[[`,2))
+bestPerf&lt;-which.max(sapply(records,function(x)ifelse(x[[2]]==bestScore,length(x[[1]]),0)))
+
+steps&lt;-records[[bestPerf]][[3]]
+fruit_locs&lt;-records[[bestPerf]][[4]]
+
+snake_game$replay(steps[-1],fruit_locs,delay = .1)
+
+library(animation)
+res&lt;-saveGIF(
+  snake_game$replay(steps[-1],fruit_locs,delay = .001),
+  movie.name = &quot;snake_animation.gif&quot;,
+  interval= .07)
+</code></pre>
+</div>
+<div id="additional-resources" class="section level2">
+<h2>Additional Resources</h2>
+<p>Thank you so much for taking the time to read this and hopefully this gives you some more understanding on how to implement reinforcement learning in R. This is a rapidly developing field, and this algorithm already has many improvements that exist! In addition, Google has released a framework called <a href="https://github.com/google/dopamine">Dopamine</a> on github to help make reinforcement learning more accessible.</p>
+<p>In conclusion, I believe reinforcement learning has many more avenues for growth than just playing video games at super-human levels, and I am excited to explore and see where things go next.</p>
+</div>
+
+			</div>
+		</div>
+	</div>
+		<div class="links">
+			<a href="/">Home</a>
+			
+				<a href="/post/">Archive</a>
+			
+			
+			<a href="#top">Top</a>
+		</div>
+		
+		
+	</body>
+</html>
+

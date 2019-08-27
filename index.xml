@@ -30,5 +30,14 @@
 I discussed our approach to creating the documentaion required to validate an internally generated R package and lessons learned working in a group.</description>
     </item>
     
+    <item>
+      <title>Arcade Games using R and TensorFlow</title>
+      <link>/thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</link>
+      <pubDate>Tue, 09 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</guid>
+      <description>Reinforcement learning is an interesting technique where in the user gives a model a game state and requests that it produce some sort of reaction to the state. This action is then fed back into the model to generate the next state. If the result of this action is a positive reaction, it is recorded and the model is fit to imply this action is a good one.</description>
+    </item>
+    
   </channel>
 </rss>

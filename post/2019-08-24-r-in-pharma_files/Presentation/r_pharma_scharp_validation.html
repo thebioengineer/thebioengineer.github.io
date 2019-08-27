@@ -1,0 +1,185 @@
+<html>
+  <head>
+  <title>R/Pharma: Validation Framework for Assay Processing Pipelines</title>
+  <meta name="author" content="Ellis Hughes" />
+  <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+  <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
+  <link rel="stylesheet" type="text/css" href="css/r_pharma_scharp.css"/>
+  </head>
+  <body>
+
+  <div class="slide_master">
+  
+	<div>
+		<div class="slide_container" style="visibility:visible">
+			<div class="slide_id" id="slide_1">
+			<div class="Title">
+				<h1> Validation Framework for Assay Processing Pipelines </h1>
+				<h4> Ellis Hughes, Anthony Williams, Alicia Sato, Paul Stutzman, Kate Ostbye </h4>
+				<h4> August 23, 2019 </h4>
+			</div>
+			<div class="logos">
+				<img src="img/logos/fhcrc.jpg"/>
+				<img src="img/logos/scharp.png"/>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+    <div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_2_1">
+			<div class="multi_slide_title">
+				Fred Hutch and SCHARP
+			</div>
+			<div class="slide_content">
+				<ul>
+					<li><img src="img/logos/fhcrc.jpg"/></li>
+					<li> Named for baseball great and hometown hero, Fred Hutchinson </li>
+					<li> Fred Hutchinson Cancer Research Center opened its doors in 1975 </li>
+					<li><img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Fred_Hutchinson_1953.jpg" style="margin:auto;"/></li>
+					
+				</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+    <div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_2_2">
+			<div class="multi_slide_title"></div>
+			<div class="slide_content">
+				<ul>
+					<li><img src="img/logos/scharp.png" style="height:101px"/></li>
+					<li> Statistical Center for HIV/AIDS Research and Prevention </li>
+					<li> Established 1992 </li>
+					<li> Conduct innovative infectious disease research and global clinical trials. </li>
+					<li>
+					<ul>
+						<li> SCHARP has supported more than 200 clinical trials and epidemiologic studies </li>
+						<li> Worldwide-impact in the fight against cancer, HIV/AIDS and other infectious diseases. </li>
+					</ul>
+					<li><img src="http://www.fredhutch.org/content/www/en/research/divisions/vaccine-infectious-disease-division/research/biostatistics-bioinformatics-and-epidemiology/statistical-center-for-hiv-aids-research-and-prevention/_jcr_content/root/responsivegrid/panelcontainer/contents/image.img.jpeg"  style="margin:auto;"/></li>
+					</li>
+				</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<div class="slide_container">
+			<div class="slide_id" id="slide_3">
+			<div class="slide_title">
+				Ellis Hughes
+			</div>
+			<div class="slide_content">
+			<table>
+			<tr>
+				<td style="height:100%;width: 40vw;font-size:20px;">
+				<ul>
+					<li> Statistical Progammer </li>
+					<li> Seattle UseR Organizer </li>	
+					<li> </li>
+					<li> </li>
+					<li> twitter:  @ellis_hughes </li>
+				</ul>
+				</td>
+				<td style="height:100%;width: 40vw;">
+				<div style="height:100%">
+					<img src="img/ellis_hughes.jpg"/>
+				</div>
+				</td>
+			</table>
+			</div>
+			
+			</div>
+		</div>
+	</div>
+	
+	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_4_1">
+			<div class="multi_slide_title">
+				The Problem with Research is it Always Changes
+			</div>
+			<div class="slide_content">
+				<ul>
+					<li> Labs gonna do what labs gonna do </li>
+					<li> They like Excel, text, machine output </li>	
+					<li> Minimal Pre-processing </li>
+					<li> </li>
+				</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_4_2">
+			<div class="slide_title"></div>
+			<div class="slide_content">
+				<ul>
+					<li> Assays in Format Agreement: </li>
+					<ul>
+					<li> Binding Antibody Multiplex Assay </li>	
+					<li> Neutralizing Antibody </li>
+					</ul>
+				</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_4_3">
+			<div class="slide_title"></div>
+			<div class="slide_content">
+				<p> Format may be in agreement, but content is not! </p>
+				
+			</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+
+  <!-- END OF SLIDES DIV -->
+  </div> 
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="slick/slick.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){	  
+		$('.slide_master').slick({
+			accessibility: true,
+			dots: true,
+			infinite: false,
+			speed: 300,
+			slidesToShow: 1,
+			centerMode: true,
+			variableWidth: true
+			});
+	  
+	  	
+    });   
+	
+	$('.slide_master').on('afterChange', function(event, slick, currentSlide, nextSlide){
+			<!-- make slide contents visible -->
+			var slide = $(".slick-current").find(".slide_id")
+			slide.css('visibility','visible');
+		});
+
+	
+	
+  </script>
+
+  </body>
+</html>

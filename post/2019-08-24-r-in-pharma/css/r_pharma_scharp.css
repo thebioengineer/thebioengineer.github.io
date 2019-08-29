@@ -14,7 +14,7 @@
  
 .slide_container{
 	font-family: 'Josefin Sans', sans-serif;
-	font-size: 30px;
+	font-size: 2vh;
 	position: relative;
 	width:90vw;
 	height:90vh;
@@ -23,14 +23,14 @@
 
 .multi_slide_container{
 	font-family: 'Josefin Sans', sans-serif;
-	font-size:40px;
+	font-size:3vh;
 	position: relative;
 	height:90%;
 	visibility: hidden;
 }
 
 .slide_title{
-	font-size:50px;
+	font-size:5vh;
 	padding-left:5vw;
 	text-align: center;
 	display: inline-block;

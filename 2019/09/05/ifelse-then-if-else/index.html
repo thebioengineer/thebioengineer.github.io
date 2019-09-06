@@ -105,7 +105,7 @@
 
 <p>The crux is that <code>ans</code> is a copy of the test argument, which is a logical vector. When you are trying to write into <code>ans</code>, it appears as though it will try to find the &ldquo;lowest&rdquo; common object type between the assigned new value and the current existing values.</p>
 
-<p>In the case of my colleage, it was numeric. Since Date objects are actually numeric values, and logical values can also be seen as <sup>1</sup>&frasl;<sub>0</sub> values for TRUE/FALSE, it would convert the Date objects and the logical values into numeric. This can be demonstrated using the code below:</p>
+<p>In the case of my colleage, it was numeric. Since Date objects are actually numeric values, and logical values can also be seen as 1 / 0 values for TRUE/FALSE, it would convert the Date objects and the logical values into numeric. This can be demonstrated using the code below:</p>
 
 <pre><code class="language-r">logical_vector&lt;-c(TRUE,TRUE,FALSE)
 newvalue&lt;-as.Date(&quot;2019-01-01&quot;)
@@ -122,7 +122,9 @@ print(logical_vector)
 
 <h1 id="if-else">if_else</h1>
 
-<p><code>if_else</code> is a &ldquo;Vectorised if&rdquo; according to the documentation and is more strict than the base <code>ifelse</code> function by strictly checking that the true/false outputs are the same type. In addition, it will give you a warning if the input is invalid. Base <code>ifelse</code> will not, for either non length 1 inputs:</p>
+<p><code>if_else</code> is a &ldquo;Vectorised if&rdquo; according to the documentation and is more strict than the base <code>ifelse</code> function by strictly checking that the true/false outputs are the same type. In addition, it will give you a warning if the input is invalid. The implimentation of <code>if_else</code> is the same as your base <code>ifelse</code>, so the learning curve should not be large, just relearning to type the new function.</p>
+
+<p>Some of the benefits of <code>if_else</code> is that the strictness enforces good behavior and programming practices. Base <code>ifelse</code> will not. For example, you are not allowed to pass non length 1 inputs:</p>
 
 <pre><code class="language-r">dplyr::if_else(TRUE,c(1,2,3),c(4,5,6))
   # Error: `true` must be length 1 (length of `condition`), not 3
@@ -132,7 +134,7 @@ ifelse(TRUE,c(1,2,3),c(4,5,6))
  # [1] 1
 </code></pre>
 
-<p>or for mismatched args:</p>
+<p>or for mismatched types for args:</p>
 
 <pre><code>dplyr::if_else(c(TRUE,FALSE),&quot;1&quot;,2)
   # Error: `false` must be a character vector, not a double vector
@@ -144,7 +146,7 @@ ifelse(c(TRUE,FALSE),&quot;1&quot;,2)
 
 <h1 id="conclusion">Conclusion</h1>
 
-<p>Hopefully this demonstration helped illustrate why you get &ldquo;interesting&rdquo; values when you are performing some ifelse&rsquo;s in your code, using <code>tidyverse</code> or not. Being critical of our code and the results help bring clarity to why certain behaviors exist.</p>
+<p>Hopefully this little demonstration helped illustrate why you get &ldquo;interesting&rdquo; values when you are performing some ifelse&rsquo;s in your code, using <code>tidyverse</code> or not. Being critical of our code and the results help bring clarity to why certain behaviors exist.</p>
 
 <p>Luckily for us, ifelse usually works within the <code>tidyverse</code> pipe workflow in our mutates without the strange quirks that I outlined above. However, if you do come accross this issue, try the preffered <code>if_else</code>!</p>
 

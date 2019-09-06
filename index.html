@@ -76,11 +76,12 @@
 				<a href="/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/">ifelse then if_else </a>
 			</h1>
 			<span class="post-meta">
-				Thu, Sep 5, 2019 - Read in 3 Min
+				Thu, Sep 5, 2019 - Read in 4 Min
 			</span>
 		</header>
 		<div class="summary">
-			Problem Statement Today one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric. My first instinct was that date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R). So, comparing the two would result in the values being converted into numeric since comparisons (&gt;,&lt;,==) are not implemented between POSIXct and Date objects.
+			Problem StatementToday one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric.
+date1&lt;-as.Date(c(&quot;2019-01-01&quot;,&quot;2019-01-02&quot;,&quot;2019-01-03&quot;))date2&lt;-as.Date(c(&quot;2019-01-02&quot;,&quot;2018-01-02&quot;,&quot;2019-01-03&quot;))ifelse(date1&gt;date2,date1,date2)## [1] 17898 17898 17899My first instinct was that date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R).
 			<a href="/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/">Read more...</a>
 		</div>
 	</article>

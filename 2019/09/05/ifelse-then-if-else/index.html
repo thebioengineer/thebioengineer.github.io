@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+		<title>ifelse then if_else &middot; Ellis Hughes</title>
+		<link rel="canonical" href="/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/">
+		<link rel="stylesheet" type="text/css" href="/css/main.css" />
+		
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-146603285-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-146603285-1');
+</script>
+
+	</head>
+	<body>
+		<a id="title" href="/" title="Ellis Hughes">
+			
+				<img id="logo" alt="Logo" src="/images/logo_sm.jpg" style="-webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);" />
+			
+			
+				<h1>Ellis Hughes</h1>
+			
+		</a>
+		
+			<h4>blogs and musings of a bioengineer turned data scientist</h4>
+		
+		<div id="social">
+			
+			
+			
+			<a href="https://github.com/thebioengineer" title="Github">
+				<img alt="GitHub" height="64px" width="64px" src="/images/github.svg" />
+			</a>
+			
+			
+			
+			<a href="https://twitter.com/ellis_hughes" title="Twitter">
+				<img alt="Twitter" height="64px" width="64px" src="/images/twitter.svg" />
+			</a>
+			
+			
+			<a href="https://linkedin.com/in/ellishughes" title="LinkedIn">
+				<img alt="LinkedIn" height="64px" width="64px" src="/images/linkedin.svg" />
+			</a>
+			
+                        
+		</div>
+		<div class="links">
+			<a href="/">Home</a>
+			
+				<a href="/post/">Archive</a>
+			
+			
+		</div>
+
+	<div class="postBody">
+		<div class="post">
+			<h1>ifelse then if_else</h1>
+			<span class="post-meta">Thu, Sep 5, 2019 - Read in 3 Min</span>
+			<div class="content">
+			<nav id="TableOfContents">
+<ul>
+<li><a href="#problem-statement">Problem Statement</a></li>
+<li><a href="#ifelse">ifelse</a></li>
+<li><a href="#if-else">if_else</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</nav>
+			
+
+<h1 id="problem-statement">Problem Statement</h1>
+
+<p>Today one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric. I started to wax poetic on how date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R). So, comparing the two would of course result in the values being converted into numeric since comparisons (<code>&gt;</code>,<code>&lt;</code>,<code>==</code>) are not implemented between POSIXct and Date objects.</p>
+
+<p>Before I posted, thankfully someone else correctly identified using <code>if_else</code> would solve my colleagues issue, and the thread moved along.</p>
+
+<p>However, the bigger question was stuck in my craw: WHY was <code>ifelse</code> returning numeric values. It looked like the values expected to be returned were of the same class, and the values compared were of the same class.</p>
+
+<h1 id="ifelse">ifelse</h1>
+
+<p>Upon inspection of the ifelse function, it was this set of lines really helped me understand the issue:</p>
+
+<pre><code class="language-r">function (test, yes, no) 
+{
+  ...
+  ans &lt;- test
+  ok &lt;- !is.na(test)
+  if (any(test[ok])) 
+    ans[test &amp; ok] &lt;- rep(yes, length.out = length(ans))[test &amp; ok]
+  if (any(!test[ok])) 
+    ans[!test &amp; ok] &lt;- rep(no, length.out = length(ans))[!test &amp; ok]
+  ...
+}
+
+</code></pre>
+
+<p>The crux is that <code>ans</code> is a copy of the test argument, which is a logical vector. When you are trying to write into <code>ans</code>, it appears as though it will try to find the &ldquo;lowest&rdquo; common object type between the assigned new value and the current existing values.</p>
+
+<p>In the case of my colleage, it was numeric. Since Date objects are actually numeric values, and logical values can also be seen as <sup>1</sup>&frasl;<sub>0</sub> values for TRUE/FALSE, it would convert the Date objects and the logical values into numeric. This can be demonstrated using the code below:</p>
+
+<pre><code class="language-r">logical_vector&lt;-c(TRUE,TRUE,FALSE)
+newvalue&lt;-as.Date(&quot;2019-01-01&quot;)
+print(newvalue)
+  # [1] &quot;2019-01-01&quot;
+  
+logical_vector[2]&lt;-newvalue
+
+print(logical_vector)
+  # [1]     1 17897     0
+</code></pre>
+
+<p>Fortunately there is a solution. You can convert the numeric values on the other end of the ifelse back into date objects, or, more reasonably, use the <code>if_else</code> function in the {dplyr} package.</p>
+
+<h1 id="if-else">if_else</h1>
+
+<p><code>if_else</code> is a &ldquo;Vectorised if&rdquo; according to the documentation and is more strict than the base <code>ifelse</code> function by strictly checking that the true/false outputs are the same type. In addition, it will give you a warning if the input is invalid. Base <code>ifelse</code> will not, for either non length 1 inputs:</p>
+
+<pre><code class="language-r">dplyr::if_else(TRUE,c(1,2,3),c(4,5,6))
+  # Error: `true` must be length 1 (length of `condition`), not 3
+  # Call `rlang::last_error()` to see a backtrace
+  
+ifelse(TRUE,c(1,2,3),c(4,5,6))
+ # [1] 1
+</code></pre>
+
+<p>or for mismatched args:</p>
+
+<pre><code>dplyr::if_else(c(TRUE,FALSE),&quot;1&quot;,2)
+  # Error: `false` must be a character vector, not a double vector
+  # Call `rlang::last_error()` to see a backtrace
+  
+ifelse(c(TRUE,FALSE),&quot;1&quot;,2)
+  # [1] &quot;1&quot; &quot;2&quot;
+</code></pre>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Hopefully this demonstration helped illustrate why you get &ldquo;interesting&rdquo; values when you are performing some ifelse&rsquo;s in your code, using <code>tidyverse</code> or not. Being critical of our code and the results help bring clarity to why certain behaviors exist.</p>
+
+<p>Luckily for us, ifelse usually works within the <code>tidyverse</code> pipe workflow in our mutates without the strange quirks that I outlined above. However, if you do come accross this issue, try the preffered <code>if_else</code>!</p>
+
+			</div>
+		</div>
+	</div>
+		<div class="links">
+			<a href="/">Home</a>
+			
+				<a href="/post/">Archive</a>
+			
+			
+			<a href="#top">Top</a>
+		</div>
+		
+		
+	</body>
+</html>
+

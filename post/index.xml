@@ -2,31 +2,40 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Ellis Hughes</title>
-    <link>thebioengineer.github.io/post/</link>
+    <link>/thebioengineer.github.io/post/</link>
     <description>Recent content in Posts on Ellis Hughes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 05 Sep 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="thebioengineer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/thebioengineer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>ifelse then if_else</title>
+      <link>/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/</link>
+      <pubDate>Thu, 05 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/</guid>
+      <description>Problem Statement Today one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric. I started to wax poetic on how date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R). So, comparing the two would of course result in the values being converted into numeric since comparisons (&amp;gt;,&amp;lt;,==) are not implemented between POSIXct and Date objects.</description>
+    </item>
+    
+    <item>
       <title>R in Pharma</title>
-      <link>thebioengineer.github.io/2019/08/26/r-in-pharma/</link>
+      <link>/thebioengineer.github.io/2019/08/26/r-in-pharma/</link>
       <pubDate>Mon, 26 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>thebioengineer.github.io/2019/08/26/r-in-pharma/</guid>
+      <guid>/thebioengineer.github.io/2019/08/26/r-in-pharma/</guid>
       <description>Below are the slides I presented at this years R/Pharma conference. It was a blast and I met so many great people. I learned about the many ways R is being used in the industry, and how there is a huge push towards collaboration and transparancy in sharing our code.
 I discussed our approach to creating the documentaion required to validate an internally generated R package and lessons learned working in a group.</description>
     </item>
     
     <item>
       <title>Arcade Games using R and TensorFlow</title>
-      <link>thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</link>
+      <link>/thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</link>
       <pubDate>Tue, 09 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</guid>
+      <guid>/thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</guid>
       <description>Reinforcement learning is an interesting technique where in the user gives a model a game state and requests that it produce some sort of reaction to the state. This action is then fed back into the model to generate the next state. If the result of this action is a positive reaction, it is recorded and the model is fit to imply this action is a good one.</description>
     </item>
     

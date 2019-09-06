@@ -79,11 +79,11 @@
 
 <h1 id="problem-statement">Problem Statement</h1>
 
-<p>Today one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric. I started to wax poetic on how date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R). So, comparing the two would of course result in the values being converted into numeric since comparisons (<code>&gt;</code>,<code>&lt;</code>,<code>==</code>) are not implemented between POSIXct and Date objects.</p>
+<p>Today one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric. My first instinct was that date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R). So, comparing the two would result in the values being converted into numeric since comparisons (<code>&gt;</code>,<code>&lt;</code>,<code>==</code>) are not implemented between POSIXct and Date objects.</p>
 
 <p>Before I posted, thankfully someone else correctly identified using <code>if_else</code> would solve my colleagues issue, and the thread moved along.</p>
 
-<p>However, the bigger question was stuck in my craw: WHY was <code>ifelse</code> returning numeric values. It looked like the values expected to be returned were of the same class, and the values compared were of the same class.</p>
+<p>However, the bigger question was stuck in my craw: WHY was <code>ifelse</code> returning numeric values. Clearly my first solution was not the answer. It looked like the values expected to be returned were of the same class, and the values compared were of the same class.</p>
 
 <h1 id="ifelse">ifelse</h1>
 

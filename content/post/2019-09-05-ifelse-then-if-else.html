@@ -1,0 +1,100 @@
+---
+title: ifelse then if_else
+author: ~
+date: '2019-09-05'
+slug: ifelse-then-if-else
+categories: [programming]
+tags: [design decisions]
+---
+
+
+
+<div id="problem-statement" class="section level1">
+<h1>Problem Statement</h1>
+<p>Today one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric.</p>
+<pre class="r"><code>date1&lt;-as.Date(c(&quot;2019-01-01&quot;,&quot;2019-01-02&quot;,&quot;2019-01-03&quot;))
+date2&lt;-as.Date(c(&quot;2019-01-02&quot;,&quot;2018-01-02&quot;,&quot;2019-01-03&quot;))
+ifelse(date1&gt;date2,date1,date2)</code></pre>
+<pre><code>## [1] 17898 17898 17899</code></pre>
+<p>My first instinct was that date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R). So, comparing the two would result in the values being converted into numeric since comparisons (<code>&gt;</code>,<code>&lt;</code>,<code>==</code>) are not implemented in POSIXct and Date objects.</p>
+<p>Before I posted, thankfully someone else correctly identified using <code>if_else</code> would solve my colleagues issue, and the thread moved along.</p>
+<p>However, the question was stuck in my craw: WHY was <code>ifelse</code> returning numeric values when the yes/no values were Date objects?</p>
+</div>
+<div id="ifelse" class="section level1">
+<h1>ifelse</h1>
+<p>Upon inspection of the ifelse function, it was this set of lines really helped me understand the issue:</p>
+<pre class="r"><code>ifelse &lt;- function(test,yes,no){
+  ...
+  ans &lt;- test
+  ok &lt;- !is.na(test)
+  if (any(test[ok])) 
+     ans[test &amp; ok] &lt;- rep(yes, length.out = length(ans))[test &amp; ok]
+  if (any(!test[ok])) 
+     ans[!test &amp; ok] &lt;- rep(no, length.out = length(ans))[!test &amp; ok]
+  ...
+}
+</code></pre>
+<p>The crux is that <code>ans</code> is a copy of the test argument, which is a logical vector. When you are trying to write into <code>ans</code>, R will try to find the “lowest” common object type between the assigned new value and the current existing values.</p>
+<p>In the case of my colleague, it was numeric. Since Date objects are actually numeric values, and logical values can also be seen as 1 / 0 values for TRUE/FALSE, R converts the Date objects and the logical values into numeric. This can be demonstrated using the code below:</p>
+<pre class="r"><code>logical_vector&lt;-c(TRUE,TRUE,FALSE)
+newvalue&lt;-as.Date(&quot;2019-01-01&quot;)
+print(newvalue)</code></pre>
+<pre><code>## [1] &quot;2019-01-01&quot;</code></pre>
+<pre class="r"><code>logical_vector[2]&lt;-newvalue
+
+print(logical_vector)</code></pre>
+<pre><code>## [1]     1 17897     0</code></pre>
+<p>Fortunately there is a solution - You can convert the numeric values on the other end of the <code>ifelse</code> back into date objects using the as.Date(x,origin=‘1970-01-01’). However, this adds complexity to the workflow that might not be desired.</p>
+</div>
+<div id="if_else" class="section level1">
+<h1>if_else</h1>
+<p><code>if_else</code> is a “Vectorised if” according to the documentation and is more strict than the base <code>ifelse</code> function by strictly checking that the true/false outputs are the same type. In addition, it will give you a warning if the input is invalid. The implementation of <code>if_else</code> is the same as your base <code>ifelse</code>, so the learning curve should not be large, just relearning to type the new function.</p>
+<p>Some of the benefits of <code>if_else</code> is that the strictness enforces good behavior and programming practices. Base <code>ifelse</code> will not. For example, you are not allowed to pass inputs that are a different length than the condition you are checking:</p>
+<pre class="r"><code>dplyr::if_else(TRUE,c(1,2,3),c(4,5,6))
+  # Error: `true` must be length 1 (length of `condition`), not 3
+  # Call `rlang::last_error()` to see a backtrace
+  
+ifelse(TRUE,c(1,2,3),c(4,5,6))
+ # [1] 1</code></pre>
+<p>or for mismatched types for args:</p>
+<pre class="r"><code>dplyr::if_else(c(TRUE,FALSE),&quot;1&quot;,2)
+  # Error: `false` must be a character vector, not a double vector
+  # Call `rlang::last_error()` to see a backtrace
+  
+ifelse(c(TRUE,FALSE),&quot;1&quot;,2)
+  # [1] &quot;1&quot; &quot;2&quot;</code></pre>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>Hopefully this little demonstration helped illustrate why you get “interesting” values when you are performing some ifelse’s in your code, using <code>tidyverse</code> or not. Being critical of our code and the results help bring clarity to why certain behaviors exist.</p>
+<p>Luckily for us, ifelse usually works within the <code>tidyverse</code> pipe workflow in our mutates without the strange quirks that I outlined above. However, if you do come across this issue, try the preferred <code>if_else</code>!</p>
+<div id="bonus" class="section level3">
+<h3>Bonus</h3>
+<p>A bonus solution would be to implement a more flexible ifelse in your workflow, as to not add a dependency to {dplyr}. I only see this as a benefit if you are not already loading the <code>tidyverse</code> into your session.</p>
+<pre class="r"><code>ret&lt;-function(x,bools){
+  if(length(x)==1){
+    x
+  }else if(length(x)==length(bools)){
+    x[bools]
+  }else{
+    stop(&quot;inputs need to be the same length as `test`&quot;)
+  }
+}
+
+ife&lt;-function(test,yes,no){
+  ans&lt;-vector(&quot;list&quot;,length(test))
+  ok&lt;-!is.na(test)
+  if(any(test[ok]))
+    ans[test &amp; ok]&lt;-as.list(ret(yes,test &amp; ok))
+  if(any(!test[ok]))
+    ans[!test &amp; ok]&lt;-as.list(ret(no,!test &amp; ok))
+  if(all(lengths(ans)==1)){
+    ans&lt;-do.call(&#39;c&#39;,ans)
+  }
+  return(ans)
+}</code></pre>
+<p><code>ife</code> resolves my colleagues problem, but does not have as many error checks as <code>ifelse</code>.</p>
+<pre class="r"><code>ife(date1&gt;date2,date1,date2)</code></pre>
+<pre><code>## [1] &quot;2019-01-02&quot; &quot;2019-01-02&quot; &quot;2019-01-03&quot;</code></pre>
+</div>
+</div>

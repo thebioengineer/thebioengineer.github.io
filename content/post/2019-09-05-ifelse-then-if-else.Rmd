@@ -1,0 +1,130 @@
+---
+title: ifelse then if_else
+author: ~
+date: '2019-09-05'
+slug: ifelse-then-if-else
+categories: [programming]
+tags: [design decisions]
+---
+
+# Problem Statement
+Today one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric.
+
+```{r}
+date1<-as.Date(c("2019-01-01","2019-01-02","2019-01-03"))
+date2<-as.Date(c("2019-01-02","2018-01-02","2019-01-03"))
+ifelse(date1>date2,date1,date2)
+```
+
+
+My first instinct was that date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R). So, comparing the two would result in the values being converted into numeric since comparisons (`>`,`<`,`==`) are not implemented in POSIXct and Date objects.
+
+Before I posted, thankfully someone else correctly identified using `if_else` would solve my colleagues issue, and the thread moved along.
+
+However, the question was stuck in my craw: WHY was `ifelse` returning numeric values when the yes/no values were Date objects? 
+
+# ifelse
+Upon inspection of the ifelse function, it was this set of lines really helped me understand the issue:
+
+```r
+ifelse <- function(test,yes,no){
+  ...
+  ans <- test
+  ok <- !is.na(test)
+  if (any(test[ok])) 
+     ans[test & ok] <- rep(yes, length.out = length(ans))[test & ok]
+  if (any(!test[ok])) 
+     ans[!test & ok] <- rep(no, length.out = length(ans))[!test & ok]
+  ...
+}
+
+```
+
+The crux is that `ans` is a copy of the test argument, which is a logical vector. When you are trying to write into `ans`, R will try to find the "lowest" common object type between the assigned new value and the current existing values.
+
+In the case of my colleague, it was numeric. Since Date objects are actually numeric values, and logical values can also be seen as 1 / 0 values for TRUE/FALSE, R converts the Date objects and the logical values into numeric. This can be demonstrated using the code below:
+
+```{r} 
+logical_vector<-c(TRUE,TRUE,FALSE)
+newvalue<-as.Date("2019-01-01")
+print(newvalue)
+  
+logical_vector[2]<-newvalue
+
+print(logical_vector)
+```
+
+
+Fortunately there is a solution - You can convert the numeric values on the other end of the `ifelse` back into date objects using the as.Date(x,origin='1970-01-01'). However, this adds complexity to the workflow that might not be desired.
+ 
+ 
+# if_else 
+ 
+`if_else` is a "Vectorised if" according to the documentation and is more strict than the base `ifelse` function by strictly checking that the true/false outputs are the same type. In addition, it will give you a warning if the input is invalid. The implementation of `if_else` is the same as your base `ifelse`, so the learning curve should not be large, just relearning to type the new function.
+
+Some of the benefits of `if_else` is that the strictness enforces good behavior and programming practices. Base `ifelse` will not. For example, you are not allowed to pass inputs that are a different length than the condition you are checking:
+
+```{r, eval=FALSE}
+dplyr::if_else(TRUE,c(1,2,3),c(4,5,6))
+  # Error: `true` must be length 1 (length of `condition`), not 3
+  # Call `rlang::last_error()` to see a backtrace
+  
+ifelse(TRUE,c(1,2,3),c(4,5,6))
+ # [1] 1
+```
+
+or for mismatched types for args:
+```{r, eval=FALSE}
+dplyr::if_else(c(TRUE,FALSE),"1",2)
+  # Error: `false` must be a character vector, not a double vector
+  # Call `rlang::last_error()` to see a backtrace
+  
+ifelse(c(TRUE,FALSE),"1",2)
+  # [1] "1" "2"
+```
+
+# Conclusion
+
+Hopefully this little demonstration helped illustrate why you get "interesting" values when you are performing some ifelse's in your code, using `tidyverse` or not. Being critical of our code and the results help bring clarity to why certain behaviors exist.
+
+Luckily for us, ifelse usually works within the `tidyverse` pipe workflow in our mutates without the strange quirks that I outlined above. However, if you do come across this issue, try the preferred `if_else`!
+
+
+### Bonus
+
+A bonus solution would be to implement a more flexible ifelse in your workflow, as to not add a dependency to {dplyr}. I only see this as a benefit if you are not already loading the `tidyverse` into your session.
+
+```{r}
+
+ret<-function(x,bools){
+  if(length(x)==1){
+    x
+  }else if(length(x)==length(bools)){
+    x[bools]
+  }else{
+    stop("inputs need to be the same length as `test`")
+  }
+}
+
+ife<-function(test,yes,no){
+  ans<-vector("list",length(test))
+  ok<-!is.na(test)
+  if(any(test[ok]))
+    ans[test & ok]<-as.list(ret(yes,test & ok))
+  if(any(!test[ok]))
+    ans[!test & ok]<-as.list(ret(no,!test & ok))
+  if(all(lengths(ans)==1)){
+    ans<-do.call('c',ans)
+  }
+  return(ans)
+}
+
+```
+
+`ife` resolves my colleagues problem, but does not have as many error checks as `ifelse`.
+
+```{r}
+
+ife(date1>date2,date1,date2)
+
+```

@@ -1,0 +1,155 @@
+ 
+ body{
+	font-family: 'Josefin Sans', sans-serif;
+	color:black;
+ } 
+ 
+ .slick-slide{
+	 height:95%;
+ }
+ 
+ .slide_id{
+	 height:90vh;
+ }
+ 
+.slide_container{
+	font-family: 'Josefin Sans', sans-serif;
+	font-size: 2vh;
+	position: relative;
+	width:90vw;
+	height:90vh;
+	visibility: hidden;
+}
+
+.multi_slide_container{
+	font-family: 'Josefin Sans', sans-serif;
+	font-size:3vh;
+	position: relative;
+	height:90%;
+	visibility: hidden;
+}
+
+.slide_title{
+	font-size:5vh;
+	padding-left:5vw;
+	text-align: center;
+	display: inline-block;
+	margin-top: 10vh;
+	position: absolute;
+	background-color: #112345;
+	color: #fff;
+}
+
+.multi_slide_title{
+	padding-left:5vw;
+	text-align: left;
+	display: inline-block;
+	margin-top: 8vh;
+	padding-top: 2vh;
+	padding-right: 5vw;
+	width: 50vw;
+	height: 15vh;
+	position: absolute;
+	background-color: #112345;
+	color: #fff;
+	font-size:80px;
+	z-index:1000;
+}
+
+
+.slide_content{
+	position: relative;
+	text-align: left;
+	margin-left: 10%;
+	margin-right: 10%;
+	margin-top: 30vh;
+	display: inline-block;	
+	font-size: 40px;
+}
+
+.slide_Title {
+	width:100%;
+	padding:10px;
+	margin: auto;
+	background-color: #112345;
+	color: #fff;
+}
+.slide_Title .title_text {
+	margin: 10px 5px 5px 5px;
+	font-size:70px;
+	text-align: left;
+	padding-left: 5%;
+	padding-bottom: 2%;
+}
+
+.slide_Title .subtitle_text {
+	margin: 5px;
+	font-size:30px;
+	text-align: left;
+	padding-left: 5%;
+}
+
+
+.logos {
+	display: inline-block;
+    margin-left: 10vw;
+    margin-right: auto;
+    margin-top: 10%;
+    width: 50%;
+    position: relative;
+}
+
+.logos img {
+	width: 45%;
+	max-height: 10vh;
+	display: inline-block;
+	margin: 20px;
+}
+
+
+#slide_1{
+    top: 0%;
+	display: inline-block;
+	height:100%;
+	background-color:#d3d3d340;
+}
+
+#slide_4{
+	/* background-color:#d3d3d340; */
+	height:100%
+}
+
+#slide_5_1{
+	width:35vw;
+}
+
+#slide_5_5 h1{
+	background-color: #112345;
+	color: #fff;
+	padding: 20px;
+} 
+
+ .slide_6, .slide_7, .slide_9, .slide_11 {
+	background-color:#d3d3d340;
+	height:100%
+}
+
+ul{
+	list-style-type: none;
+}
+
+li{
+	padding-bottom: 15px;
+}
+
+li img{
+	max-height: 15%;
+	max-width:400px;
+	margin: 20px;
+}
+
+.fhcrc_info_container{
+	width: 23vw;
+	display:inline-block;
+	margin:auto;
+}

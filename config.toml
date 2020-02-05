@@ -1,0 +1,43 @@
+baseurl = "thebioengineer.github.io/"
+languageCode = "en-us"
+title = "Ellis Hughes"
+theme = "light-hugo"
+googleAnalytics = "UA-146603285-1"
+disqusShortname = ""
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
+[[menu.main]]
+    name = "About"
+    url = "/about/"
+[[menu.main]]
+    name = "GitHub"
+    url = "https://github.com/thebioengineer"
+[[menu.main]]
+    name = "Twitter"
+    url = "https://twitter.com/ellis_hughes"
+
+[params]
+    description = "blogs and musings of a bioengineer turned data scientist"
+    # email = "ellishughes@live.com"
+    github = "thebioengineer"
+    twitter = "ellis_hughes"
+    linkedin = "ellishughes"
+    logo = "/images/logo_sm.jpg"
+
+
+    # options for highlight.js (version, additional languages, and theme)
+    highlightjsVersion = "9.12.0"
+    highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    highlightjsLang = ["r", "yaml"]
+    highlightjsTheme = "github"
+
+    MathJaxCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    MathJaxVersion = "2.7.5"
+
+    # path to the favicon, under "static"
+    favicon = "favicon.ico"
+
+

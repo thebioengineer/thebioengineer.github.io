@@ -1,0 +1,189 @@
+---
+title: "Big mtcars"
+author: ~
+date: '2019-09-10'
+slug: big-mtcars
+categories: []
+tags: []
+---
+
+# MTCARS
+
+Lets admit it, the mtcars dataset is basically beat to death. Who hasn't seen the example of regressing displacement vs mpg to show, surprise, there is a relationship. It seems like it has worked its way into every introductory R class known.
+
+> So, lets go bigger
+
+Luckily for us, the kind folks over at the [EPA](fueleconomy.gov) have been hard at work reviewing how our cars are doing. Seems like they are active. They _even_ have downloads page where we can just hop on over to and directly download the most recent data, and a data dictionary!
+
+```{r load_data, message=FALSE,warning=FALSE}
+
+suppressMessages({
+  library(tidyverse)
+  library(plotly)
+})
+
+temp_dir<-tempdir()
+
+download.file(url      = "https://www.fueleconomy.gov/feg/epadata/vehicles.csv.zip",
+              destfile = file.path(temp_dir,"vehicles.csv.zip"))
+
+utils::unzip(file.path(temp_dir,"vehicles.csv.zip"))
+
+big_epa_cars <- readr::read_csv(file      = "vehicles.csv",
+                                guess_max = 50000)
+
+```
+
+Woah - this dataset is LARGE! 41632 rows and 83 fields is a scoche much, and really doesn't contain a lot of information that we would really care about. Lets cut this down into a more managable dataset that is like the base `mtcars` dataset.
+
+```{r clean_up}
+
+# > colnames(mtcars)
+#  [1] "mpg"  "cyl"  "disp" "hp"   "drat" "wt"   "qsec" "vs"   "am"   "gear" "carb"
+
+epa_mtcars <-big_epa_cars %>% 
+  mutate(
+    fuel         = paste0(fuelType1,",",fuelType2),
+    mpg_city     = paste0(city08 ,",",cityA08),
+    mpg_hw       = paste0(highway08 ,",",highwayA08),
+    c02          = paste0(co2,",",co2A),
+    trany        = 
+      gsub("Auto\\(AM-S(\\d+)\\)","Automatic \\1-spd",
+      gsub("4-spd Doubled","4-spd",
+      gsub("(variable gear ratios)","variable_gear_ratios",
+                        trany)),perl=TRUE)
+  ) %>% 
+  separate(trany,c("transmission","gears"),sep=" ") %>% 
+  mutate(gears = gsub("-spd","",gears)) %>% 
+  select(
+    make         = make,
+    model        = model,
+    year         = year,
+    type         = VClass,
+    displacement = displ,
+    transmission,
+    gears,
+    cylinders    = cylinders,
+    drive,
+    fuel,
+    mpg_city,
+    mpg_hw,
+    c02
+  ) %>% 
+  separate_rows(fuel,mpg_city,mpg_hw,c02,sep=",") %>% 
+  filter(fuel     !="NA",
+         mpg_city !=0) %>% 
+  mutate(mpg_city  = as.numeric(mpg_city),
+         mpg_hw    = as.numeric(mpg_hw),
+         c02       = as.numeric(c02),
+         c02       = na_if(c02,-1)) %>% 
+  arrange(make,model,year)
+
+```
+
+
+Unfortunately I did not have all the same information available as was in the `mtcars` dataset, but it gives us enough!!
+
+
+## MPG over time!
+
+How have our fearless automakers been doing over time. Recently (read past decade or so) there has been a massive effort for manufacturers to be producing more fuel efficient vehicles across their entire offerings. Has that actually happened? The EPA defines combined mpg for a vehicle as "a weighted average of City and Highway MPG values that is calculated by weighting the City value by 55% and the Highway value by 45%" ([source](https://www.fueleconomy.gov/feg/label/learn-more-gasoline-label.shtml)). We will do that to simplify our calculations.
+
+To remove some of the noise, I will only be keeping the main auto makers; Audi, BMW, Chevrolet, Chrysler, Dodge, Ford, GMC, Honda, Hyundai, Jeep, Mazda, Mercedes-Benz, Mitsubishi, Nissan, Porsche, Subaru, Toyota, Volkswagen, and Volvo.
+
+```{r mpg over time, width='100%'}
+
+mpg_over_year <- epa_mtcars %>% 
+  mutate(mpg = mpg_hw * .45 + mpg_city * .55) %>% 
+  group_by(make,year) %>% 
+  summarize(fleet_mpg = mean(mpg),
+            ncars = n())
+
+main_manufacturers<-c("Audi", "BMW", "Chevrolet", "Chrysler", "Dodge", 
+                      "Ford", "GMC", "Honda", "Hyundai", "Jeep", 
+                      "Mazda", "Mercedes-Benz", "Mitsubishi", "Nissan",
+                      "Porsche", "Subaru", "Toyota", "Volkswagen", "Volvo")
+
+
+mpg_plot<-
+  mpg_over_year %>% 
+  filter(make %in% main_manufacturers) %>% 
+  ungroup() %>% 
+  ggplot() +
+  geom_line(aes( x = year,
+                 y = fleet_mpg,
+                 color = make,
+                 group = make))+
+  ggtitle("Main Manufacturer MPG Average Over Time")+
+  xlab(NULL)+
+  ylab("MPG")+
+  theme_bw()
+
+ggplotly(mpg_plot)
+
+```
+
+There has been a sharp increase over time for most manufacturers, which is great. Not only does it save the environment, but in theory you don't have to fill up as often!
+
+## GMC
+
+After inspecting the mpg over time plot, I noticed that one manufacturer is lagging behind everyone else. Not to point fingers, but I was curious why. 
+
+```{r ITS GMC}
+
+GMC<-epa_mtcars %>% 
+  filter(make == "GMC")
+
+GMC %>% select(type) %>% table %>% head %>% knitr::kable()
+
+```
+
+<img src="https://media.giphy.com/media/AlPmS5u7cM6PK/giphy.gif"/>
+
+Well, there you go. Nearly all the vehicles GMC has ever made has been the type of vehicle you would expect that would lead to a low MPG. Now, GMC is actually owned right now by GM, which has several different brands we all know: Buick, Cadillac, Chevrolet, and GMC. If we look at these 4 manufactures MPG of their fleets, we can see that Buick has been buoying up the rest of them over the years. No wonder Buick has been throwing so many adds as us- but sorry buick I will not be buying one any time soon.
+
+```{r GM mpg over time, width='100%'}
+
+GM_parent <- c("Buick", "Cadillac", "Chevrolet", "GMC")
+
+
+GM_mpg_over_year <- epa_mtcars %>% 
+  filter( make %in% GM_parent) %>% 
+  mutate(mpg = mpg_hw * .45 + mpg_city * .55) %>% 
+  group_by(year) %>% 
+  summarize(fleet_mpg = mean(mpg)) %>% 
+  ungroup() %>% 
+  mutate(make = "GM Parent",
+         year=as.factor(year))
+  
+GM_mpg_plot<-
+  epa_mtcars %>% 
+  filter(make %in% GM_parent) %>% 
+  mutate(mpg = mpg_hw * .45 + mpg_city * .55,
+         year=as.factor(year),
+         bp = paste(year,make)) %>%
+  ggplot() +
+  geom_boxplot(aes(x = year,
+                   y = mpg,
+                   fill = make, group=bp),
+               position="dodge")+
+  geom_line(data=GM_mpg_over_year,
+            aes(x= year,
+                y = fleet_mpg,
+                group=make))+
+  ggtitle("GM MPG Average Over Time")+
+  xlab(NULL)+
+  ylab("MPG")+
+  theme_bw()
+
+ggplotly(GM_mpg_plot) %>% layout(boxmode = 'group')
+
+```
+
+
+## Conclusion
+
+Anyway, I am sure everyone can come up with much more interesting plots and visualizations and I would love to see them!
+
+
+

@@ -1,0 +1,485 @@
+<html>
+  <head>
+  <title>R/Pharma: Validation Framework for Assay Processing Pipelines</title>
+  <meta name="author" content="Ellis Hughes" />
+  <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+  <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
+  <link rel="stylesheet" type="text/css" href="css/r_pharma_scharp.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300&display=swap" rel="stylesheet">
+  <body style="height: 100%;width: 95%;padding: 0px;margin: 0px;">
+
+  <div class="slide_master">
+  
+	<div>
+		<div class="slide_container" style="visibility:visible">
+			<div class="slide_id" id="slide_1">
+			<div     style="margin-top: 30vh;">
+			<div class="slide_Title">
+				<p class="title_text" style="z-index:1000";> Validation Framework for Assay Processing Pipelines </p>
+				<p class="subtitle_text"> Ellis Hughes </p>
+				<p class="subtitle_text"> August 23, 2019 </p>
+			</div>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_4">
+			<div class="multi_slide_title">
+				Ellis Hughes
+			</div>
+			<div class="slide_content" style="width:70vw;">
+			<table>
+			<tr>
+				<td style="height:100%;font-size:3vh;width:30vw;">
+				<ul>
+					<li> <b>Statistical Programmer</b><br> &nbspFred Hutch </li>
+					<li> <b>R user for 5 years</b></li>
+					<li> <b>Seattle UseR Organizer</b> </li>
+					<li> <b>Cascadia R Conf Committee</b> </li>
+					<li> <b>Enjoys R Package development</b></li>
+					<li> </li>
+					<li> </li>
+					<li> <b>@ellis_hughes</b> </li>
+					<li> <b>linkedin.com/in/ellishughes</b> </li>
+				</ul>
+				</td>
+				<td style="height:100%; padding: -40px">
+				<div style="height:100%">
+					<img src="https://thebioengineer.github.io/images/r_in_pharma/img/ellis_hughes.jpg" style="margin: auto;height: 20%;transform: rotate(-90deg);"/>
+				</div>
+				</td>
+			</table>
+			</div>
+			
+			</div>
+		</div>
+	</div>
+	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_2" id="slide_2">
+			<div class="multi_slide_title" style="width:30vw;">
+				Outline
+			</div>
+			<div class="slide_content" style="width:60vw;">
+			<div style="display:inline-flex">
+				<div style="width:30vw;font-size:4vh;">
+				<p><b> Background </b><p>
+				<br>
+				<p><b> Package Development & Validation Framework </b></p>
+				<br>
+				<p><b> Lessons Learned </b></p>
+				</div>
+				<div>
+					<img src="https://thebioengineer.github.io/images/r_in_pharma/img/FH_logo.PNG" style = "max-width:40vw;"/>
+				</div>
+			</div>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+    <div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_3_1">
+			<div class="multi_slide_title" style="font-size:8vh">
+				Fred Hutch and SCHARP
+			</div>
+			<div class="slide_content" style="font-size:2vh;">
+				<div style="width:75vw;display:inline-block">
+				<div class="fhcrc_info_container">
+					<div>
+						<img src="http://www.fredhutch.org/content/www/en/about/about-the-hutch/_jcr_content/root/responsivegrid/panelcontainer/contents/textimage_copy/image.img.png" alt="Icon depicting blood stem cell transplantation and immunotherapy" style="margin:auto"/>
+					</div>
+					<h4 style="text-align: center;">Blood Stem Cell Transplantation<br>and Immunotherapy</h4>  
+				</div>
+				<div class="fhcrc_info_container">
+					<div>
+						<img src="http://www.fredhutch.org/content/www/en/about/about-the-hutch/_jcr_content/root/responsivegrid/panelcontainer/contents/textimage_813484303_/image.img.png" style="margin:auto"/>
+					</div>
+					<h4 style="text-align: center;">Cancer Risk Factors, and Causes,<br>Prevention and Outcomes</h4>  
+				</div>
+				<div class="fhcrc_info_container">
+					<div>
+						<img src="http://www.fredhutch.org/content/www/en/about/about-the-hutch/_jcr_content/root/responsivegrid/panelcontainer/contents/textimage_467138480_/image.img.png" style="margin:auto"/>
+					</div>
+					<h4 style="text-align: center;">Vaccine Development<br>and Virus-Associated Cancers</h4>  
+				</div>				
+				</div>
+			
+				<div>
+				<div style="margin:auto;width:70%">
+				<div class="fhcrc_info_container">
+					<div>
+						<img src="http://www.fredhutch.org/content/www/en/about/about-the-hutch/_jcr_content/root/responsivegrid/panelcontainer/contents/textimage_copy_copy/image.img.png" style="margin:auto"/>
+					</div>
+					<h4 style="text-align: center;">Molecular Underpinnings of Cancer</h4>  
+				</div>
+
+				<div class="fhcrc_info_container">
+					<div>
+						<img src="http://www.fredhutch.org/content/www/en/about/about-the-hutch/_jcr_content/root/responsivegrid/panelcontainer/contents/textimage_813484303__56068710/image.img.png" style="margin:auto"/>
+					</div>
+					<h4 style="text-align: center;">Tumor-Specific Translational Research</h4>  
+				</div>
+				</div>
+				</div>
+
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id" id="slide_3_4">
+			<div class="slide_content" style="width:60vw;">
+				<ul style="margin-top: -10vh;">
+					<li><img src="https://thebioengineer.github.io/images/r_in_pharma/img/logos/scharp.png" style="height:200px;max-width:50vw;margin-bottom:5vh;"/></li>
+					<li> <b>Established 1992</b> </li><br>
+					<li> <b>Worldwide-impact in the fight <br>against cancer, HIV/AIDS and <br>other infectious diseases.</b> </li><br>
+					</li><br>
+					</li>
+				</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_5" id="slide_5_1">
+			<div class="multi_slide_title" style="width:80vw;margin-left:-5vw;font-size:7vh">
+				Assays and Correlates of Protection
+			</div>
+			<div class="slide_content" style="width:30vw;">
+			<b> Cutting edge Research in HIV/AIDS prevention and Vaccine Development all over the world</b>
+			<br>
+			<br>
+			<img src="http://www.fredhutch.org/content/www/en/research/divisions/vaccine-infectious-disease-division/research/biostatistics-bioinformatics-and-epidemiology/statistical-center-for-hiv-aids-research-and-prevention/_jcr_content/root/responsivegrid/panelcontainer/contents/image.img.jpeg" style = "max-width:30vw;"/>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_5" id="slide_5_2">
+			<div class="slide_content" style="width:35vw">
+			<img src="https://storage.needpix.com/rsynced_images/crowd-2045498_1280.jpg"  style="max-height:40vh;max-width:800px"/>
+			<p style="font-size:1.5vh">https://storage.needpix.com/rsynced_images/crowd-2045498_1280.jpg</p>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_5" id="slide_5_3">
+			<div class="slide_content">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/sample_coll.png"  style="max-height:60vh; padding-top:15vh"/>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_5" id="slide_5_4">
+			<div class="slide_content">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/thinker.PNG"/ style="max-height:60vh;max-width:800px">
+			</div>
+			</div>
+		</div>
+	</div>	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_5" id="slide_5_5">
+			<div class="slide_content">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/assaying.PNG"/ style="max-height:60vh;max-width:400px">
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_5" id="slide_5_5">
+			<div class="slide_content" style="width:30vw">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/visc.PNG" style="max-height:60vh;max-width:800px;padding-top: 5vh;">
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_5" id="slide_5_3">
+			<div class="slide_content" style="width:60vw;">
+				<h2 style="margin-top:0px;"> Assays are under constant development</h2>
+				<b> - Antigens could be added to the processing plan </b>	
+				<br>
+				<b> - Exploratory endpoints </b>		
+				<br>
+				<b> - Processing techniques </b>	
+				<br>
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/ab.png"  style="margin:auto;"/>
+			</div>
+			</div>
+		</div>
+	</div>
+	<!-- <div> -->
+		<!-- <div class="multi_slide_container"> -->
+			<!-- <div class="slide_id slide_5" id="slide_5_4"> -->
+			<!-- <div class="slide_content"> -->
+				<!-- <b>  Subjects could be missing visits </b> -->
+				<!-- <br> -->
+				<!-- <br> -->
+				<!-- <b>  Samples could fail QC </b>	 -->
+				<!-- <br> -->
+				<!-- <br> -->
+				<!-- <b>  Re-ran samples </b>	 -->
+			<!-- </div> -->
+			<!-- </div> -->
+		<!-- </div> -->
+	<!-- </div> -->
+	<div>
+		<div class="multi_slide_container" style="width:70vw;">
+			<div class="slide_id" id="slide_5_5">
+			<div class="slide_content">
+				<h1 style="font-size:8vh;">  We need a validated pipeline that is rigid enough to provide form and consistency between studies, but 
+					  flexible enough to handle potential changes</h1>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_6" id="slide_6_1">
+			<div class="multi_slide_title" style="width:80vw;margin-left:-10vw;">
+				Package Development and Validation
+			</div>
+			<div class="slide_content">
+			<p><b> Develop functions as steps in a work flow </b><p>
+			<br>
+			<p><b> Capture all documentation that is required in a validation </b></p>
+			<br>
+			<p><b> Automation tools to support code development </b></p>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_6" id="slide_6_2">
+			<div class="slide_content" style="width: 50vw">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/standard_wf.PNG"/ style="max-height:60vh;max-width:50vw">
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_6" id="slide_6_3">
+			<div class="slide_content" style="width: 50vw">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/unique_wf.PNG"/ style="max-height:60vh;max-width:50vw">
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_6" id="slide_6_4">
+			<div class="slide_content" style="width: 50vw">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/standard_wf_plus.PNG"/ style="max-height:60vh;max-width:50vw">
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_6" id="slide_6_5">
+			<div class="slide_content">
+			<b> The roxygen2 package allows for self documentation and manual generation </b><br>
+			<div style="text-align:center;">
+				<img src="https://raw.githubusercontent.com/rstudio/hex-stickers/master/PNG/roxygen2.png"  style="margin:auto;max-height:20%;width:220px;"/>
+				<p style="font-size:1.5vh">Roxygen2 -RStudio (https://github.com/rstudio/hex-stickers/blob/master/PNG/roxygen2.png)</p>
+			</div>
+			<br><br><br>
+			<!-- <b> Vignettes can contain all the information required for documentation of the specifications</b> -->
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_6" id="slide_6_6">
+			<div class="slide_content" style="width:60vw;">
+			<b>Documenting of the validation process in a vignette:</b><br>
+			<br>
+			<br>
+			<b>Introduction</b><br>
+				&nbsp Capture the reason behind creating the package<br>
+			<b>Purpose</b><br>
+				&nbsp Goals that the package should achieve<br>
+			<b>Specifications</b><br>
+				&nbsp Capture the process level specifications<br>
+				&nbsp Capture the function level specifications<br>
+			<b>Risk Assessment</b><br>
+			&nbsp Capture the process level risks and mitigations in a table<br>
+			&nbsp Capture the function level risks and mitigations in a table<br>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_6" id="slide_6_7" style="width:36vw;">
+			<div class="slide_content" style="width:32vw;">
+			<div style="text-align:center;position: relative;top: -200px;">
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/GitHub-Mark.png"  style="margin:auto;width:30vw;"/>
+				<p>github.com</p>
+			</div>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	
+	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_10" id="slide_10">
+			<div class="multi_slide_title" style="width:70vw">
+				Lessons Learned & Observations
+			</div>
+			<div class="slide_content" style="width:50vw;">
+			<b>Designing explicit specifications is important</b><br><br>
+			<b>Function naming schemes</b><br><br>
+			<b>Function argument formats</b><br><br>
+			<b>Package Dependencies</b><br><br>
+			<b>Tidy-styling</b><br><br>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_10" id="slide_10_3">
+			<div class="slide_content" style="width:60vw;">
+			<h2> Observations </h2>
+			<h3> Easy to accidentally gloss over important functionality </h3>
+				&nbsp Record features explicitly required and double check often 
+			<br>
+			<h3> Scope creep is inevitable </h3>
+			<ul>
+				<li>Unforeseen functions</li>
+				<li>Additional functionality</li>
+			</ul>
+				<!-- &nbsp Key is to know when to stop or push to another time<br> -->
+				<!-- &nbsp Having clearly defined Specifications help limit scope <br> -->
+			</div>
+			</div>
+		</div>
+	</div>
+	
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_11" id="slide_11_1">
+			<div class="slide_content" style="width:50vw;">
+			<h1> Co-Authors and Support </h1>
+			<ul>
+				<li> Anthony Williams </li>
+				<li> Jimmy Fulp </li>
+				<li> Bharathi Lakshminarayanan </li>
+				<li> Alicia Sato </li>
+				<li> Shannon Grant </li>
+				<li> Paul Stutzman </li>
+				<li> Kate Ostbye </li>
+				<!-- <li> <img src="img/logos/fhcrc.jpg"/> </li> -->
+			</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_11" id="slide_11_1">
+			<div class="slide_content" style="width:30vw;">
+			<br><br><br>
+			<h2> Fred Hutch is Hiring! </h2>
+			<ul>
+				<li> fredhutch.com/careers </li>
+				<li> <img src="https://thebioengineer.github.io/images/r_in_pharma/img/logos/fhcrc.jpg"/> </li>
+			</ul>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="multi_slide_container">
+			<div class="slide_id slide_11" id="slide_11_1">
+			<div class="slide_content" style="width:40vw;">
+			<div class="slide_Title">
+				<p class="title_text"> Thank You </p>
+				<img src="https://thebioengineer.github.io/images/r_in_pharma/img/r_pharma_logo.png"  style="margin:auto;"/>
+			</div>
+			
+			</div>
+			</div>
+		</div>
+	</div>
+
+
+  <!-- END OF SLIDES DIV -->
+  </div> 
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script type="text/javascript" src="slick/slick.min.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function(){	  
+		$('.slide_master').slick({
+			accessibility: true,
+			dots: true,
+			infinite: false,
+			speed: 300,
+			slidesToShow: 1,
+			centerMode: true,
+			variableWidth: true
+			});
+	  
+	  	
+    });   
+	
+	$('.slide_master').on('afterChange', function(event, slick, currentSlide, nextSlide){
+			<!-- make slide contents visible -->
+			var slide = $(".slick-current").find(".slide_id")
+			slide.css('visibility','visible');
+		});
+
+	$(window).resize(function() {
+		console.log("Unslick!");
+		$('.slide_master').slick("unslick");
+		
+		window.setTimeout(function(){
+
+		// console.log("Re-slick", slickOptions);
+		$('.slide_master').show(); // optionally
+		$('.slide_master').slick({
+			accessibility: true,
+			dots: true,
+			infinite: false,
+			speed: 300,
+			slidesToShow: 1,
+			centerMode: true,
+			variableWidth: true});
+		}, 200); // can be changed to a lower value - whatever works
+
+});
+	
+  </script>
+
+  </body>
+</html>

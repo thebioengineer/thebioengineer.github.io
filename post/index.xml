@@ -1,55 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Posts on Ellis Hughes</title>
-    <link>/thebioengineer.github.io/post/</link>
-    <description>Recent content in Posts on Ellis Hughes</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Tue, 10 Sep 2019 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/thebioengineer.github.io/post/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Big mtcars</title>
-      <link>/thebioengineer.github.io/2019/09/10/big-mtcars/</link>
-      <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/thebioengineer.github.io/2019/09/10/big-mtcars/</guid>
-      <description>MTCARSLets admit it, the mtcars dataset is basically beat to death. Who hasn’t seen the example of regressing displacement vs mpg to show, surprise, there is a relationship. It seems like it has worked its way into every introductory R class known.
-So, lets go bigger
-Luckily for us, the kind folks over at the EPA have been hard at work reviewing how our cars are doing.</description>
-    </item>
-    
-    <item>
-      <title>ifelse then if_else</title>
-      <link>/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/</link>
-      <pubDate>Thu, 05 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/</guid>
-      <description>Problem StatementToday one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric.
-date1&amp;lt;-as.Date(c(&amp;quot;2019-01-01&amp;quot;,&amp;quot;2019-01-02&amp;quot;,&amp;quot;2019-01-03&amp;quot;))date2&amp;lt;-as.Date(c(&amp;quot;2019-01-02&amp;quot;,&amp;quot;2018-01-02&amp;quot;,&amp;quot;2019-01-03&amp;quot;))ifelse(date1&amp;gt;date2,date1,date2)## [1] 17898 17898 17899My first instinct was that date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R).</description>
-    </item>
-    
-    <item>
-      <title>R in Pharma</title>
-      <link>/thebioengineer.github.io/2019/08/26/r-in-pharma/</link>
-      <pubDate>Mon, 26 Aug 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/thebioengineer.github.io/2019/08/26/r-in-pharma/</guid>
-      <description>Below are the slides I presented at this years R/Pharma conference. It was a blast and I met so many great people. I learned about the many ways R is being used in the industry, and how there is a huge push towards collaboration and transparancy in sharing our code.
-I discussed our approach to creating the documentaion required to validate an internally generated R package and lessons learned working in a group.</description>
-    </item>
-    
-    <item>
-      <title>Arcade Games using R and TensorFlow</title>
-      <link>/thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</link>
-      <pubDate>Tue, 09 Jul 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/thebioengineer.github.io/2019/07/09/arcade-games-using-r-and-tensorflow/</guid>
-      <description>Reinforcement learning is an interesting technique where in the user gives a model a game state and requests that it produce some sort of reaction to the state. This action is then fed back into the model to generate the next state. If the result of this action is a positive reaction, it is recorded and the model is fit to imply this action is a good one.</description>
-    </item>
-    
-  </channel>
-</rss>

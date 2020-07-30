@@ -1,0 +1,32 @@
+---
+title: "knitr - The Format Awakens"
+description: |
+  Recent releases of {knitr} now use format
+author:
+  - name: Unknown
+date: 07-29-2020
+output:
+  distill::distill_article:
+    self_contained: false
+draft: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+```
+
+We all know that {knitr} by Yihui Xie is better than sliced bread.
+It just is.
+
+It works, we can write our reports _with our code_ and generate all our outputs at the same time.
+Many thoughts and 
+
+Yet, for all these years, something was missing. 
+Or rather, there was a disturbance. 
+
+Okay, okay, I'm done with the starwars puns for now. 
+But seriously speaking there is a really cool new feature now available in knitr that I am going to bet you didn't even think could be so cool.
+
+
+

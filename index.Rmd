@@ -1,3 +1,14 @@
 ---
-site: blogdown:::blogdown_site
+title: "Ellis Hughes"
+site: distill::distill_website
+listing: posts
 ---
+
+## Background
+
+This site is where I will document my various observations, promote software I develop, and generally try to record thoughts over time. 
+
+If you enjoy what you read, you can find me on twitter at [\@ellis_hughes](https://twitter.com/ellis_hughes), on github as [\@thebioengineer](https://github.com/thebioengineer), or LinkedIn under... [my name](https://linkedin.com/in/ellishughes).
+
+I also run a weekly screencast called TidyX where I and my co-host Patrick Ward go through and explain how R code and concepts work and are applied. If you like that, you can subscribe to our [youtube channel](bit.ly/TidyX_Chanel).
+

@@ -1,25 +1,0 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>programming on Ellis Hughes</title>
-    <link>/thebioengineer.github.io/categories/programming/</link>
-    <description>Recent content in programming on Ellis Hughes</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Thu, 05 Sep 2019 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/thebioengineer.github.io/categories/programming/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>ifelse then if_else</title>
-      <link>/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/</link>
-      <pubDate>Thu, 05 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/thebioengineer.github.io/2019/09/05/ifelse-then-if-else/</guid>
-      <description>Problem StatementToday one of my colleagues posted a question into our R slack community asking why when she was using ifelse that her date field was being converted into a numeric.
-date1&amp;lt;-as.Date(c(&amp;quot;2019-01-01&amp;quot;,&amp;quot;2019-01-02&amp;quot;,&amp;quot;2019-01-03&amp;quot;))date2&amp;lt;-as.Date(c(&amp;quot;2019-01-02&amp;quot;,&amp;quot;2018-01-02&amp;quot;,&amp;quot;2019-01-03&amp;quot;))ifelse(date1&amp;gt;date2,date1,date2)## [1] 17898 17898 17899My first instinct was that date objects (and POSIXct objects) are numeric objects that are counting the number of days or seconds since the origin (January 1, 1970 in R).</description>
-    </item>
-    
-  </channel>
-</rss>

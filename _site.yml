@@ -1,0 +1,14 @@
+name: "Ellis Hughes' Website"
+title: "Ellis Hughes"
+description: |
+  Ellis Hughes' Blog as he explores and learns more about the universe
+output_dir: "_site"
+twitter:
+  site: "@ellis_hughes"
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+output: distill::distill_article
